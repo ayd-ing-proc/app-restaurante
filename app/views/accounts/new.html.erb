@@ -1,0 +1,50 @@
+<div class="container">
+  <div class="row m-auto p-3 text-center" style="width: 400px">
+    <h1>Nuevo Pedido</h1>
+  </div>
+  <%= simple_form_for @account do |f| %>
+  <%= f.error_notification %>
+
+  <div class="row m-auto p-3" style="width: 400px">
+    
+      <% @products.each do |product| %>
+        <%= f.simple_fields_for :account_products, f.object.account_products do |ff| %>
+        <div class="col-12 p-3">
+          <h5><%= product.name %></h5>
+          <p><strong>Precio: </strong>$<%= product.price %></p>
+          <div class="form-group">
+            <label>Cantidad <%= ff.number_field :quantity, value: 0, min: 0, class: "form-control product-quantity" %></label>
+            <%= ff.hidden_field :price, value: product.price , class: "product-price" %>
+            <%= ff.hidden_field :product_id, value: product.id %>
+          </div>
+        </div>
+        <% end %>
+      <% end %>
+      <div class="col-12">
+       
+        <p><%= f.submit "Enviar", class: "btn btn-primary" %></p>
+        <p><%= f.button :button, "Restablecer", type: "reset", class: "btn btn-primary" %></p>
+        <p></p>
+      </div>
+  </div>
+  <% end %>
+  <p class="position-fixed p-5" style="top: 0; right: 0;"><button class="btn btn-primary" id="calculate" type="button">Calcular</button> <strong>Total:</strong> <span id="calculated-price">$0</span></p>
+</div>
+<script>
+  $(document).ready(function() {
+    $("#calculate").click(function() {
+      calculate();
+    })
+
+    function calculate() {
+      var total = 0;
+      $(".form-group").each(function(index) {
+        var quantity = parseInt($(this).find(".product-quantity").val())
+        var value = parseInt($(this).find(".product-price").val())
+        total += quantity * value;
+      })
+
+      $("#calculated-price").text("$" + total);
+    }
+  })
+</script>
